@@ -8,21 +8,53 @@ def read_and_transform(filename):
         for line in file:
             line = line.strip()
             if not line:
-                # print(recipe)
-                cook_book[recipe[0]] = recipe[1:]
+                cook_book[recipe[0]] = recipe[2:]
+                # print(cook_book)
+                list_of_ingredients = []
+                for item in recipe[2:]:
+                    ingredient = {}
+                    item = item.split(' | ')
+                    # print(item)
+                    ingredient['ingredient_name'] = item[0]
+                    ingredient['quantity'] = item[1]
+                    ingredient['measure'] = item[2]
+                    list_of_ingredients.append(ingredient)
+                cook_book[recipe[0]] = list_of_ingredients
                 recipe.clear()
             else:
                 recipe.append(line)
-        print(cook_book)
+        # print(cook_book)
+        return cook_book
 
-    for ingredients in cook_book.values():
-        ingredients.pop(0)
-        for ingredient in ingredients:
-            print(ingredient)
+def get_shop_list_by_dishes(dishes, person_count):
+    cook_book = read_and_transform(join('input', 'recipes.txt'))
+    print(cook_book)
+    dict_of_ingredients = {}
+    list_of_ingredients = []
+    for dish in dishes:
+        try:
+            for ingredient in cook_book.get(dish):
+                ingredient_name = ingredient.get('ingredient_name')
+                measure = ingredient.get('measure')
+                if ingredient['ingredient_name'] not in list_of_ingredients:
+                    quantity = int(ingredient.get('quantity')) * person_count
+                    dict_of_ingredients.update({ingredient_name:{'measure': measure, 'quantity': quantity}})
+                    list_of_ingredients.append(ingredient['ingredient_name'])
+                else:
+                    quantity = int(ingredient.get('quantity')) * person_count + dict_of_ingredients[ingredient_name]['quantity']
+                    dict_of_ingredients.update({ingredient_name:{'measure': measure, 'quantity': quantity}})
+        except TypeError as e:
+            print(f'В списке рецептов нет блюда {dish}')
+    print(dict_of_ingredients)
 
 
+get_shop_list_by_dishes(['Фахитос', 'Омлет'], 2)
 
-
-
-read_and_transform(join('input', 'recipes.txt'))
-
+# {
+#   'Картофель': {'measure': 'кг', 'quantity': 2},
+#   'Молоко': {'measure': 'мл', 'quantity': 200},
+#   'Помидор': {'measure': 'шт', 'quantity': 4},
+#   'Сыр гауда': {'measure': 'г', 'quantity': 200},
+#   'Яйцо': {'measure': 'шт', 'quantity': 4},
+#   'Чеснок': {'measure': 'зубч', 'quantity': 6}
+# }
