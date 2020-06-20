@@ -6,17 +6,19 @@ URL = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
 DISC_URL = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
 TOKEN = 'AgAAAAAknGUZAADLW-vBDmDdu09ji0Q-K9B-UiI'
 
+
 def readfile(filename):
-    text = []
-    with open(os.path.join('input', filename), 'r', encoding='utf-8') as fr:
-        text = fr.readlines()
+    with open(os.path.join('input', filename), 'r', encoding='utf-8') as readfile:
+        text = readfile.readlines()
     return text
 
+
 def writefile(filename, text):
-    translated_text = text
-    with open(os.path.join('output', filename), 'w') as fw:
-        for line in translated_text:
-            fw.write(line)
+    with open(os.path.join('output', filename), 'w') as writefile:
+        for line in text:
+            writefile.write(line)
+    return None
+
 
 def yadiskupload(output_filename, text):
     path = os.path.join('/translate', output_filename)
@@ -28,9 +30,11 @@ def yadiskupload(output_filename, text):
         'Authorization': TOKEN
     }
     response = requests.get(DISC_URL, headers=headers, params=params)
-    json_= response.json()
+    json_ = response.json()
     href = json_['href']
     response = requests.put(href, text)
+    return None
+
 
 def translate_it(from_lang, input_filename, output_filename, to_lang='ru', yadisk=False):
     text = readfile(input_filename)
@@ -44,13 +48,13 @@ def translate_it(from_lang, input_filename, output_filename, to_lang='ru', yadis
 
     response = requests.get(URL, params=params)
     json_ = response.json()
-    translated_text = ''.join(json_['text'])
+    text = ''.join(json_['text'])
     if yadisk:
-        text_to_send = translated_text.encode('utf-8')
+        text_to_send = text.encode('utf-8')
         yadiskupload(output_filename, text_to_send)
     else:
-        writefile(output_filename,translated_text)
-
+        writefile(output_filename,text)
+    return None
 
 if __name__ == '__main__':
-    print(translate_it('fr', 'FR.txt', 'translated.txt', yadisk=True))
+    print(translate_it('fr', 'FR.txt', 'translated.txt'))
