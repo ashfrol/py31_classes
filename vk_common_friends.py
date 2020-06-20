@@ -70,4 +70,5 @@ user2 = User('rozakutubaeva', TOKEN)
 
 mutual = user1 & user2
 print(mutual)
+print(user1.__dict__)
 # print(user1.make_url())
