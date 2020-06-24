@@ -14,7 +14,7 @@ OAUTH_PARAMS = {
 
 # print('?'.join((OAUTH_URL, urlencode(OAUTH_PARAMS))))
 
-TOKEN = 'a1bf69a83bfe3a7967c43bab8791cbea23809b8cb7657eecf52b7a79bd04fde51281b321ec8a3746b8bcc'
+TOKEN = 'df8c9d215dcd6dd0f01b44682ed1e42f3adea31af3b19f32d73f309fc85b97b8a96fb71457f9a6b4191a9'
 URL = 'https://vk.com/'
 
 
@@ -23,6 +23,15 @@ class User():
         self.token = token
         self.user = user
 
+    def __str__(self):
+        user = self.__dict__['user']
+        if user.isdigit():
+            shortname = self.get_shortname(user)
+            url = ''.join((URL, shortname))
+        else:
+            shortname = self.__dict__['user']
+            url = ''.join((URL, shortname))
+        return url
 
     def get_uid(self, user):
         params = {
@@ -31,8 +40,21 @@ class User():
             'v': 5.89
         }
         response = requests.get('https://api.vk.com/method/users.get', params)
-        user_id = response.json()['response'][0]['id']
+        json_ = response.json()
+        user_id = json_['response'][0]['id']
         return user_id
+
+    def get_shortname(self, user):
+        params = {
+            'user_ids': user,
+            'fields': 'screen_name',
+            'access_token': self.token,
+            'v': 5.89
+        }
+        response = requests.get('https://api.vk.com/method/users.get', params)
+        json_ = response.json()
+        shortname = json_['response'][0]['screen_name']
+        return shortname
 
 
     def __and__(self, other_user):
@@ -57,18 +79,11 @@ class User():
             uid = User(uid, TOKEN)
             friends_list.append(uid)
         return friends_list
-    
-
-    def make_url(self):
-        uid = self.__dict__['user']
-        url = ''.join((URL, uid))
-        return url
-
 
 user1 = User('hochufoamposite', TOKEN)
 user2 = User('rozakutubaeva', TOKEN)
 
 mutual = user1 & user2
 print(mutual)
-print(user1.__dict__)
-# print(user1.make_url())
+print(user1)
+print(user2)
