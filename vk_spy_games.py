@@ -50,7 +50,7 @@ class User:
             'v': 5.89
         }
         response = requests.get('https://api.vk.com/method/friends.get', params)
-        print(response.json())
+        # print(response.json())
         list_of_friends = response.json()['response']['items']
         friends = []
         for uid in list_of_friends:
@@ -107,9 +107,9 @@ class User:
             group_info_list.append(group_info)
         pprint(group_info_list)
         return group_info_list
-    
-                
 
+            
+                
 user1 = User('eshmargunov')
 user1.get_spy_groups()
 
